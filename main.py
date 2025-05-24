@@ -1,5 +1,6 @@
 import pygame
 from scripts.TaxiDriver import TaxiDriver
+from dqnagent import DQNAgent
 
 class Game:
 
@@ -15,26 +16,48 @@ class Game:
         self.taxi_driver = TaxiDriver()
         self.hit_box_size = SCREEN_HEIGHT // self.taxi_driver.size
         self.state = self.taxi_driver.reset()
+        self.agent = DQNAgent(23, 4)
+        self.episode = 0
+        self.max_episodes = 1000
+        self.total_time = 0
+        self.total_reward = 0
+        self.done = False
 
     def run(self):
         while self.is_running:
-            done = False
-            reward = 0
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_w:
-                        self.state, reward, done = self.taxi_driver.step(0)
-                    if event.key == pygame.K_s:
-                        self.state, reward, done = self.taxi_driver.step(1)
-                    if event.key == pygame.K_a:
-                        self.state, reward, done = self.taxi_driver.step(2)
-                    if event.key == pygame.K_d:
-                        self.state, reward, done = self.taxi_driver.step(3)
+                # elif event.type == pygame.KEYDOWN:
+                #     if event.key == pygame.K_w:
+                #         self.state, reward, done = self.taxi_driver.step(0)
+                #     if event.key == pygame.K_s:
+                #         self.state, reward, done = self.taxi_driver.step(1)
+                #     if event.key == pygame.K_a:
+                #         self.state, reward, done = self.taxi_driver.step(2)
+                #     if event.key == pygame.K_d:
+                #         self.state, reward, done = self.taxi_driver.step(3)
             
-            if done:
+
+            action = self.agent.take_action(self.state)
+            next_state, reward, self.done = self.taxi_driver.step(action)
+            self.agent.remember(self.state, action, reward, next_state, self.done)
+            self.state = next_state
+            self.total_reward += reward
+            
+            # Обучение
+            self.agent.train()
+            
+            # Обновлять целевую модель переодически
+            if self.total_time % self.agent.update_target_every == 0:
+                self.agent.update_target_network()
+
+            if self.done:
+                print(f"Episode: {self.episode+1}/{self.max_episodes}, Total Reward: {self.total_reward}, Epsilon: {self.agent.epsilon:.2f}")
+                self.episode += 1
                 self.state = self.taxi_driver.reset()
+                self.done = False
 
             
 

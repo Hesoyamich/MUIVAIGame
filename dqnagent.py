@@ -33,7 +33,8 @@ class DQNAgent:
 
     def build_model(self):
         model = tf.keras.Sequential([
-            tf.keras.layers.Dense(128, activation='relu', input_shape=(self.state_size,)),
+            tf.keras.Input((self.state_size,)),
+            tf.keras.layers.Dense(128, activation='relu'),
             tf.keras.layers.Dense(64, activation='relu'),
             tf.keras.layers.Dense(self.action_size, activation='linear')
         ])
@@ -53,8 +54,8 @@ class DQNAgent:
         dones = np.array([self.memory[i][4] for i in minibatch])
 
         # Подсчёт Q-чисел
-        target_q = self.model.predict(states)
-        target_next_q = self.target_model.predict(next_states)
+        target_q = self.model.predict(states, verbose=0)
+        target_next_q = self.target_model.predict(next_states, verbose=0)
         
         for i in range(self.batch_size):
             if dones[i]:
