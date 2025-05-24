@@ -79,7 +79,7 @@ class TaxiDriver:
         x, y = self.player_pos
         # Сохранение новой позиции в массиве.
         if action == 0: # Вверх
-            new_pos = [x, max(y - 1, self.size - 1)]
+            new_pos = [x, max(y - 1, 0)]
         elif action == 1: # Вниз
             new_pos = [x, min(y + 1, self.size - 1)]
         elif action == 2: # Влево
