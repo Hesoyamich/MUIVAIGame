@@ -21,6 +21,8 @@ class DQNAgent:
         self.target_model = self.build_model()
         self.update_target_network()
 
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append((state, action, reward, next_state, done))
 
     def build_model(self):
         model = tf.keras.Sequential([
