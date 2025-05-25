@@ -16,12 +16,13 @@ class Game:
         self.taxi_driver = TaxiDriver()
         self.hit_box_size = SCREEN_HEIGHT // self.taxi_driver.size
         self.state = self.taxi_driver.reset()
-        self.agent = DQNAgent(23, 4)
+        self.agent = DQNAgent(21, 4)
         self.episode = 0
         self.max_episodes = 1000
         self.total_time = 0
         self.total_reward = 0
         self.done = False
+        
 
     def run(self):
         while self.is_running:
@@ -55,6 +56,7 @@ class Game:
 
             if self.done:
                 print(f"Episode: {self.episode+1}/{self.max_episodes}, Total Reward: {self.total_reward}, Epsilon: {self.agent.epsilon:.2f}")
+                self.total_reward = 0
                 self.episode += 1
                 self.state = self.taxi_driver.reset()
                 self.done = False
@@ -71,10 +73,6 @@ class Game:
             
             for i in range(len(self.taxi_driver.pits)):
                 pygame.draw.rect(self.display, (128,0,128), (self.taxi_driver.pits[i][0] * self.hit_box_size, self.taxi_driver.pits[i][1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
-            
-            for i in range(len(self.taxi_driver.obstacles)):
-                pygame.draw.rect(self.display, (128,0,0), (self.taxi_driver.obstacles[i][0] * self.hit_box_size, self.taxi_driver.obstacles[i][1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
-            
 
 
             pygame.display.flip()
