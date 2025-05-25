@@ -13,9 +13,12 @@ class MainMenu:
         
         
     def update(self, mouse_pos, mouse_click, key):
+        event = None
         for rect in self.button_rects.keys():
             if self.button_rects[rect].collidepoint(mouse_pos) and mouse_click:
-                print(rect)
+                event = self.buttons[rect]
+        
+        return event
 
     def render(self, display):
         for button in self.buttons.keys():
