@@ -67,7 +67,7 @@ class DQNAgent:
             else:
                 target_q[i][actions[i]] = rewards[i] + self.gamma * target_next_q[i, max_actions[i]] 
 
-        self.model.train_on_batch(states, target_q)
+        self.model.fit(states, target_q, epochs=1, verbose=0)
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay

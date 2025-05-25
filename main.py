@@ -1,6 +1,7 @@
 import pygame
-from scripts.TaxiDriver import TaxiDriver
-from dqnagent import DQNAgent
+# from scripts.TaxiDriver import TaxiDriver
+# from dqnagent import DQNAgent
+from main_meny import MainMenu
 
 class Game:
 
@@ -13,23 +14,28 @@ class Game:
         self.is_running = True
         self.display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
-        self.taxi_driver = TaxiDriver()
-        self.hit_box_size = SCREEN_HEIGHT // self.taxi_driver.size
-        self.state = self.taxi_driver.reset()
-        self.agent = DQNAgent(21, 4)
-        self.episode = 0
-        self.max_episodes = 1000
-        self.total_time = 0
-        self.total_reward = 0
-        self.done = False
+        
+        # self.taxi_driver = TaxiDriver()
+        # self.hit_box_size = SCREEN_HEIGHT // self.taxi_driver.size
+        # self.state = self.taxi_driver.reset()
+        # self.agent = DQNAgent(21, 4)
+        # self.episode = 0
+        # self.max_episodes = 1000
+        # self.total_time = 0
+        # self.total_reward = 0
+        # self.done = False
+        self.menu = MainMenu(self.f1)
         
 
     def run(self):
         while self.is_running:
-            
+            mouse_press = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        mouse_press = True
                 # elif event.type == pygame.KEYDOWN:
                 #     if event.key == pygame.K_w:
                 #         self.state, reward, done = self.taxi_driver.step(0)
@@ -40,39 +46,44 @@ class Game:
                 #     if event.key == pygame.K_d:
                 #         self.state, reward, done = self.taxi_driver.step(3)
             
+            mouse_pos = pygame.mouse.get_pos()
 
-            action = self.agent.take_action(self.state)
-            next_state, reward, self.done = self.taxi_driver.step(action)
-            self.agent.remember(self.state, action, reward, next_state, self.done)
-            self.state = next_state
-            self.total_reward += reward
-            
-            # Обучение
-            self.agent.train()
-            
-            # Обновлять целевую модель переодически
-            if self.total_time % self.agent.update_target_every == 0:
-                self.agent.update_target_network()
+            self.menu.update(mouse_pos, mouse_press, None)
 
-            if self.done:
-                print(f"Episode: {self.episode+1}/{self.max_episodes}, Total Reward: {self.total_reward}, Epsilon: {self.agent.epsilon:.2f}")
-                self.total_reward = 0
-                self.episode += 1
-                self.state = self.taxi_driver.reset()
-                self.done = False
+            # action = self.agent.take_action(self.state)
+            # next_state, reward, self.done = self.taxi_driver.step(action)
+            # self.agent.remember(self.state, action, reward, next_state, self.done)
+            # self.state = next_state
+            # self.total_reward += reward
+            
+            # # Обучение
+            # self.agent.train()
+            
+            # # Обновлять целевую модель переодически
+            # if self.total_time % self.agent.update_target_every == 0:
+            #     self.agent.update_target_network()
+
+            # if self.done:
+            #     print(f"Episode: {self.episode+1}/{self.max_episodes}, Total Reward: {self.total_reward}, Epsilon: {self.agent.epsilon:.2f}")
+            #     self.total_reward = 0
+            #     self.episode += 1
+            #     self.state = self.taxi_driver.reset()
+            #     self.done = False
 
             
 
             self.display.fill((10,50,255))
 
-            pygame.draw.rect(self.display, (0, 255, 0), (self.taxi_driver.player_pos[0] * self.hit_box_size, self.taxi_driver.player_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
-            pygame.draw.rect(self.display, (255, 0, 0), (self.taxi_driver.destination_pos[0] * self.hit_box_size, self.taxi_driver.destination_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
+            self.menu.render(self.display)
 
-            if not self.taxi_driver.has_passenger:
-                pygame.draw.rect(self.display, (0, 122, 122), (self.taxi_driver.passenger_pos[0] * self.hit_box_size, self.taxi_driver.passenger_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
+            # pygame.draw.rect(self.display, (0, 255, 0), (self.taxi_driver.player_pos[0] * self.hit_box_size, self.taxi_driver.player_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
+            # pygame.draw.rect(self.display, (255, 0, 0), (self.taxi_driver.destination_pos[0] * self.hit_box_size, self.taxi_driver.destination_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
+
+            # if not self.taxi_driver.has_passenger:
+            #     pygame.draw.rect(self.display, (0, 122, 122), (self.taxi_driver.passenger_pos[0] * self.hit_box_size, self.taxi_driver.passenger_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
             
-            for i in range(len(self.taxi_driver.pits)):
-                pygame.draw.rect(self.display, (128,0,128), (self.taxi_driver.pits[i][0] * self.hit_box_size, self.taxi_driver.pits[i][1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
+            # for i in range(len(self.taxi_driver.pits)):
+            #     pygame.draw.rect(self.display, (128,0,128), (self.taxi_driver.pits[i][0] * self.hit_box_size, self.taxi_driver.pits[i][1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
 
 
             pygame.display.flip()
