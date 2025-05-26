@@ -2,6 +2,7 @@ import pygame
 from scripts.TaxiDriver import TaxiDriver
 # from dqnagent import DQNAgent
 from main_meny import MainMenu
+from train_menu import TrainMenu
 
 class Game:
 
@@ -26,6 +27,8 @@ class Game:
         # self.total_reward = 0
         # self.done = False
         self.menu = MainMenu(self.f1)
+        self.train_menu = None
+        self.game_state = None
         
 
     def run(self):
@@ -49,11 +52,26 @@ class Game:
             
             mouse_pos = pygame.mouse.get_pos()
 
-            menu_event = self.menu.update(mouse_pos, mouse_press, None)
+            if self.game_state == None:
+                menu_event = self.menu.update(mouse_pos, mouse_press, None)
+            else:
+                menu_event = self.game_state.update(mouse_pos, mouse_press, None)
             if menu_event == "quit":
                 self.is_running = False
             if menu_event == "start_nn":
                 self.in_game = True
+            if menu_event == "train_nn":
+                if self.train_menu == None:
+                    self.train_menu = TrainMenu(self)
+                    self.game_state = self.train_menu
+            if menu_event == "train_next":
+                self.game_state.step = min(self.game_state.step + 1, 3)
+            if menu_event == "train_back":
+                self.game_state.step -= 1
+                if self.game_state.step < 0:
+                    self.train_menu = None
+                    self.game_state = None
+                
 
             # action = self.agent.take_action(self.state)
             # next_state, reward, self.done = self.taxi_driver.step(action)
@@ -79,19 +97,11 @@ class Game:
 
             self.display.fill((10,50,255))
 
-            if not self.in_game:
+            if self.game_state == None:
                 self.menu.render(self.display)
 
             else:
-
-                pygame.draw.rect(self.display, (0, 255, 0), (self.taxi_driver.player_pos[0] * self.hit_box_size, self.taxi_driver.player_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
-                pygame.draw.rect(self.display, (255, 0, 0), (self.taxi_driver.destination_pos[0] * self.hit_box_size, self.taxi_driver.destination_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
-
-                if not self.taxi_driver.has_passenger:
-                    pygame.draw.rect(self.display, (0, 122, 122), (self.taxi_driver.passenger_pos[0] * self.hit_box_size, self.taxi_driver.passenger_pos[1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
-            
-                for i in range(len(self.taxi_driver.pits)):
-                    pygame.draw.rect(self.display, (128,0,128), (self.taxi_driver.pits[i][0] * self.hit_box_size, self.taxi_driver.pits[i][1] * self.hit_box_size, self.hit_box_size, self.hit_box_size))
+                self.game_state.render(self.display)
 
 
             pygame.display.flip()

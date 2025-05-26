@@ -17,6 +17,7 @@ class MainMenu:
         for rect in self.button_rects.keys():
             if self.button_rects[rect].collidepoint(mouse_pos) and mouse_click:
                 event = self.buttons[rect]
+                print(event)
         
         return event
 
