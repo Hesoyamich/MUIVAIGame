@@ -16,10 +16,7 @@ class Game:
         self.display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         
-        self.taxi_driver = TaxiDriver()
-        self.hit_box_size = SCREEN_HEIGHT // self.taxi_driver.size
-        self.state = self.taxi_driver.reset()
-        self.in_game = False
+        self.games = {"Taxi Driver": {"desc": "Нейронной сети требуется забрать попутчика и отвезти его в точку прибытия.", "game_class": TaxiDriver}}
         # self.agent = DQNAgent(21, 4)
         # self.episode = 0
         # self.max_episodes = 1000
@@ -95,7 +92,7 @@ class Game:
 
             
 
-            self.display.fill((10,50,255))
+            self.display.fill((40, 40, 40))
 
             if self.game_state == None:
                 self.menu.render(self.display)
