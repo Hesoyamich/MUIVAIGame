@@ -20,8 +20,10 @@ class TrainMenu:
         # Фильтр ввода
         self.numbers_filter = "1234567890-."
         self.filename_filter = '\/:*?<>|"'
+        self.selected_field = None
         #Данные для обучения
         self.selected_game = None
+        self.field_value = None
         self.game_settings = {}
         self.rewards = {}
         self.initialize_games()
@@ -36,6 +38,8 @@ class TrainMenu:
             self.step_buttons[0].append([game, text_surf, text_rect, desc, desc_rect])
 
     def init_rewards(self):
+        self.game_settings = {}
+        self.rewards = {}
         # Инициализация настроек
         for i, setting in enumerate(self.game.games[self.selected_game]["game_settings"].keys()):
             setting_text = self.game.f1.render(setting, True, (255, 255, 255))
@@ -59,6 +63,8 @@ class TrainMenu:
             if self.step == 0 and self.selected_game != None:
                 event = "train_next"
                 self.init_rewards()
+            if self.step != 0:
+                event = "train_next"
         if self.back_button_rect.collidepoint(mouse_pos) and mouse_click:
             event = "train_back"
         
@@ -69,6 +75,40 @@ class TrainMenu:
                     self.selected_game = game[0]
         
         # Второй экран
+        if self.step == 1:
+            for option in self.step_buttons[1]:
+                if option[2].collidepoint(mouse_pos) and mouse_click:
+                    self.selected_field = option[3]
+                    print(self.selected_field)
+            if self.selected_field:
+                if self.field_value == None:
+                    self.field_value = str(self.game_settings[self.selected_field]) if self.selected_field in self.game_settings else str(self.rewards[self.selected_field])
+                if key != None:
+                    if key.key == pygame.K_BACKSPACE:
+                        self.field_value = self.field_value[:-1]
+                    elif key.key == pygame.K_RETURN:
+                        if len(self.field_value) == 0:
+                            self.field_value = 0
+                        if self.selected_field in self.game_settings:
+                            try:
+                                self.game_settings[self.selected_field] = float(self.field_value)
+                            except:
+                                self.game_settings[self.selected_field] = 0
+                            
+                        if self.selected_field in self.rewards:
+                            try:
+                                self.rewards[self.selected_field] = float(self.field_value)
+                            except:
+                                self.rewards[self.selected_field] = 0
+                        self.field_value = None
+                        self.selected_field = None
+                        print(self.rewards)
+                    else:
+                        if key.unicode in self.numbers_filter:
+                            self.field_value += key.unicode
+                            if self.field_value.count(".") > 1:
+                                self.field_value = self.field_value[:-1]
+                            print(self.field_value)
 
         # Третий экран
 
@@ -118,6 +158,12 @@ class TrainMenu:
                 text_rect = option[0].get_rect(center=option[1].center)
                 display.blit(option[0], text_rect) 
                 pygame.draw.rect(display, (255,255,255), option[2], 0, 5)
+                if option[3] == self.selected_field:
+                    pygame.draw.rect(display, (123, 42, 72), option[2], 5, 5)
+                number = self.game_settings[option[3]] if option[3] in self.game_settings else self.rewards[option[3]]
+                option_text = self.game.f1.render(str(number), True, (23, 23, 23))
+                option_rect = option_text.get_rect(center=option[2].center)
+                display.blit(option_text, option_rect)
 
         display.blit(self.next_button, self.next_button_rect)
         display.blit(self.back_button, self.back_button_rect)

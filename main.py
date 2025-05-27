@@ -37,12 +37,15 @@ class Game:
     def run(self):
         while self.is_running:
             mouse_press = False
+            key = None
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         mouse_press = True
+                if event.type == pygame.KEYDOWN:
+                    key = event
                 # elif event.type == pygame.KEYDOWN:
                 #     if event.key == pygame.K_w:
                 #         self.state, reward, done = self.taxi_driver.step(0)
@@ -58,7 +61,7 @@ class Game:
             if self.game_state == None:
                 menu_event = self.menu.update(mouse_pos, mouse_press, None)
             else:
-                menu_event = self.game_state.update(mouse_pos, mouse_press, None)
+                menu_event = self.game_state.update(mouse_pos, mouse_press, key)
             if menu_event == "quit":
                 self.is_running = False
             if menu_event == "start_nn":
