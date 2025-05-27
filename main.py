@@ -10,13 +10,14 @@ class Game:
         pygame.init()
         pygame.font.init()
         self.f1 = pygame.font.Font(None, 36)
+        self.f2 = pygame.font.Font(None, 52)
         SCREEN_HEIGHT, SCREEN_WIDTH = 1000, 1000
 
         self.is_running = True
         self.display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         
-        self.games = {"Taxi Driver": {"desc": "Нейронной сети требуется забрать попутчика и отвезти его в точку прибытия.", "game_class": TaxiDriver}}
+        self.games = {"Taxi Driver": {"desc": "Нейронной сети требуется забрать попутчика \n и отвезти его в точку прибытия.", "game_class": TaxiDriver}}
         # self.agent = DQNAgent(21, 4)
         # self.episode = 0
         # self.max_episodes = 1000
