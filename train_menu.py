@@ -22,6 +22,8 @@ class TrainMenu:
         self.filename_filter = '\/:*?<>|"'
         #Данные для обучения
         self.selected_game = None
+        self.game_settings = {}
+        self.rewards = {}
         self.initialize_games()
 
     def initialize_games(self):
@@ -33,18 +35,44 @@ class TrainMenu:
             desc = self.game.games[game]["desc"]
             self.step_buttons[0].append([game, text_surf, text_rect, desc, desc_rect])
 
+    def init_rewards(self):
+        # Инициализация настроек
+        for i, setting in enumerate(self.game.games[self.selected_game]["game_settings"].keys()):
+            setting_text = self.game.f1.render(setting, True, (255, 255, 255))
+            text_rect = setting_text.get_rect(topleft=(250, 250 + 80 * i)).inflate(110, 20)
+            setting_field = pygame.Rect(text_rect.right + 30, text_rect.top, 100, 40)
+            setting_list = self.game.games[self.selected_game]["game_settings"][setting]
+            self.step_buttons[1].append([setting_text, text_rect, setting_field, setting_list[0]])
+            self.game_settings[setting_list[0]] = setting_list[1]
+        # Инициализация наград
+        for i, reward in enumerate(self.game.games[self.selected_game]["rewards"].keys()):
+            reward_text = self.game.f1.render(reward, True, (255, 255, 255))
+            text_rect = setting_text.get_rect(topleft=(250, 250 + len(self.game_settings) * 80 + 80 * i)).inflate(110, 20)
+            reward_field = pygame.Rect(text_rect.right + 30, text_rect.top, 100, 40)
+            reward_name = self.game.games[self.selected_game]["rewards"][reward]
+            self.step_buttons[1].append([reward_text, text_rect, reward_field, reward_name])
+            self.rewards[reward_name] = 0
+
     def update(self, mouse_pos, mouse_click, key):
         event = None
         if self.next_button_rect.collidepoint(mouse_pos) and mouse_click:
             if self.step == 0 and self.selected_game != None:
                 event = "train_next"
+                self.init_rewards()
         if self.back_button_rect.collidepoint(mouse_pos) and mouse_click:
             event = "train_back"
         
+        # Первый экран
         if self.step == 0:
             for game in self.step_buttons[0]:
                 if game[2].collidepoint(mouse_pos) and mouse_click:
                     self.selected_game = game[0]
+        
+        # Второй экран
+
+        # Третий экран
+
+        # Четвертый экран
 
         return event
 
@@ -63,6 +91,7 @@ class TrainMenu:
         text_rect.center = (500, 150)
         display.blit(text, text_rect)
 
+        # Первый экран
         if self.step == 0:
             for game in self.step_buttons[0]:
                 pygame.draw.rect(display, (63, 63, 63), game[2], 0, 5)
@@ -82,6 +111,13 @@ class TrainMenu:
                     pygame.draw.rect(display, (113, 113, 113), desc_rect)
                     display.blit(desc_text, desc_rect)
                     
+        # Второй экран
+        if self.step == 1:
+            for option in self.step_buttons[1]:
+                pygame.draw.rect(display, (63, 63, 63), option[1], 0, 5)
+                text_rect = option[0].get_rect(center=option[1].center)
+                display.blit(option[0], text_rect) 
+                pygame.draw.rect(display, (255,255,255), option[2], 0, 5)
 
         display.blit(self.next_button, self.next_button_rect)
         display.blit(self.back_button, self.back_button_rect)

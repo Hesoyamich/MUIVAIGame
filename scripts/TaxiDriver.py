@@ -3,12 +3,13 @@ import numpy as np
 
 class TaxiDriver:
 
-    def __init__(self, size=10):
-        self.size = size
+    def __init__(self, settings={"size": 10, "pits_amount": 0}):
+        self.size = settings['size']
         self.player_pos = None
         self.passenger_pos = None
         self.destination_pos = None
         self.pits = []
+        self.pits_amount = settings['pits_amount']
         self.has_passenger = False
         self.done = False
         
@@ -36,7 +37,7 @@ class TaxiDriver:
             self.destination_pos = [np.random.randint(self.size), np.random.randint(self.size)]
         
         self.pits = []
-        for i in range(8):
+        for i in range(self.pits_amount):
             pos = [np.random.randint(self.size), np.random.randint(self.size)]
             while pos in [self.player_pos, self.passenger_pos, self.destination_pos] or pos in self.pits:
                 pos = [np.random.randint(self.size), np.random.randint(self.size)]

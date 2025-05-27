@@ -17,7 +17,12 @@ class Game:
         self.display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         
-        self.games = {"Taxi Driver": {"desc": "Нейронной сети требуется забрать попутчика \n и отвезти его в точку прибытия.", "game_class": TaxiDriver}}
+        self.games = {"Taxi Driver": {"desc": "Нейронной сети требуется забрать попутчика \n и отвезти его в точку прибытия.", "game_class": TaxiDriver,
+                                      "game_settings": {"Размер карты:":["size", 10], "Количество ям:": ["pits_amount", 0]},
+                                      "rewards": {"Наказание за движение:":"step_penalty", "Падение в яму:":"pit_collision", "Стояние на месте:": "staying",
+                                                  "Подбор попутчика": "getting_passenger", "Доставка попутчика:": "delivering_passenger", "Движение к цели": 'distance_multiplier',
+                                                  "Посещение той же очки:": 'visited'}
+                                      }}
         # self.agent = DQNAgent(21, 4)
         # self.episode = 0
         # self.max_episodes = 1000
