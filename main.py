@@ -21,7 +21,7 @@ class Game:
                                       "game_settings": {"Размер карты:":["size", 10], "Количество ям:": ["pits_amount", 0]},
                                       "rewards": {"Наказание за движение:":"step_penalty", "Падение в яму:":"pit_collision", "Стояние на месте:": "staying",
                                                   "Подбор попутчика": "getting_passenger", "Доставка попутчика:": "delivering_passenger", "Движение к цели": 'distance_multiplier',
-                                                  "Посещение той же очки:": 'visited'}
+                                                  "Посещение той же очки:": 'visited'}, "action_size": 4, "min_state_size": 5, "add_size": ["pits_amount", 2]
                                       }}
         # self.agent = DQNAgent(21, 4)
         # self.episode = 0

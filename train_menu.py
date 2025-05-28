@@ -19,6 +19,7 @@ class TrainMenu:
         self.next_button_rect.bottomright = (1000 - 50, 1000 - 50)
         # Фильтр ввода
         self.numbers_filter = "1234567890-."
+        self.second_numbers_filter = "1234567890"
         self.filename_filter = '\/:*?<>|"'
         self.selected_field = None
         #Данные для обучения
@@ -27,6 +28,11 @@ class TrainMenu:
         self.game_settings = {}
         self.rewards = {}
         self.initialize_games()
+        # 3 экран
+        self.input_layer_text = None
+        self.input_layer_rect = None
+        self.layers = []
+        self.layers_rects = []
 
     def initialize_games(self):
         for i, game in enumerate(self.game.games.keys()):
@@ -57,14 +63,30 @@ class TrainMenu:
             self.step_buttons[1].append([reward_text, text_rect, reward_field, reward_name])
             self.rewards[reward_name] = 0
 
+    def init_layers(self):
+        self.layers = []
+        self.layers_rects = []
+        add_inputs = self.game.games[self.selected_game]["add_size"]
+        inputs = self.game.games[self.selected_game]["min_state_size"] + self.game_settings[add_inputs[0]] * add_inputs[1]
+        self.input_layer_text = self.game.f1.render(f"Входной слой: {inputs} нейроннов", True, (255,255,255))
+
+        self.input_layer_rect = self.input_layer_text.get_rect()
+        self.input_layer_rect.center = (500, 250)
+
+        self.layers.append(128)
+        layer_rect = pygame.Rect(0, 0, 200, 50)
+        layer_rect.center = (500, 350)
+        self.layers_rects.append(layer_rect)
+
     def update(self, mouse_pos, mouse_click, key):
         event = None
         if self.next_button_rect.collidepoint(mouse_pos) and mouse_click:
             if self.step == 0 and self.selected_game != None:
                 event = "train_next"
                 self.init_rewards()
-            if self.step != 0:
+            if self.step == 1 and not self.selected_field:
                 event = "train_next"
+                self.init_layers()
         if self.back_button_rect.collidepoint(mouse_pos) and mouse_click:
             event = "train_back"
         
@@ -91,7 +113,7 @@ class TrainMenu:
                             self.field_value = 0
                         if self.selected_field in self.game_settings:
                             try:
-                                self.game_settings[self.selected_field] = float(self.field_value)
+                                self.game_settings[self.selected_field] = int(self.field_value)
                             except:
                                 self.game_settings[self.selected_field] = 0
                             
@@ -154,16 +176,33 @@ class TrainMenu:
         # Второй экран
         if self.step == 1:
             for option in self.step_buttons[1]:
+                number = 0
                 pygame.draw.rect(display, (63, 63, 63), option[1], 0, 5)
                 text_rect = option[0].get_rect(center=option[1].center)
                 display.blit(option[0], text_rect) 
                 pygame.draw.rect(display, (255,255,255), option[2], 0, 5)
                 if option[3] == self.selected_field:
                     pygame.draw.rect(display, (123, 42, 72), option[2], 5, 5)
-                number = self.game_settings[option[3]] if option[3] in self.game_settings else self.rewards[option[3]]
+                    number = self.field_value
+                else:
+                    number = self.game_settings[option[3]] if option[3] in self.game_settings else self.rewards[option[3]]
                 option_text = self.game.f1.render(str(number), True, (23, 23, 23))
                 option_rect = option_text.get_rect(center=option[2].center)
                 display.blit(option_text, option_rect)
+
+        # Третий экран
+        if self.step == 2:
+            pygame.draw.rect(display, (63, 63, 63), self.input_layer_rect)
+            display.blit(self.input_layer_text, self.input_layer_rect)
+            for i, layer in enumerate(self.layers):
+                layer_text = self.game.f1.render(f"Слой {i + 1}: {layer}", True, (255,255,255))
+                pygame.draw.rect(display, (63, 63, 63), self.layers_rects[i])
+                display.blit(layer_text, layer_text.get_rect(center = self.layers_rects[i].center))
+            output_text = self.game.f1.render(f"Выходной слой: {self.game.games[self.selected_game]['action_size']}", True, (255,255,255))
+            output_rect = output_text.get_rect(center=(500, 350 + len(self.layers) * 75))
+            pygame.draw.rect(display, (63, 63, 63), output_rect)
+            display.blit(output_text, output_rect)
+        
 
         display.blit(self.next_button, self.next_button_rect)
         display.blit(self.back_button, self.back_button_rect)
