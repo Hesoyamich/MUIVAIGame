@@ -33,6 +33,8 @@ class TrainMenu:
         self.input_layer_rect = None
         self.layers = []
         self.layers_rects = []
+        self.delete_layer_rect = pygame.Rect(0, 0, 50, 50)
+        self.add_layer_rect = pygame.Rect(0, 0, 200, 50)
 
     def initialize_games(self):
         for i, game in enumerate(self.game.games.keys()):
@@ -77,6 +79,14 @@ class TrainMenu:
         layer_rect = pygame.Rect(0, 0, 200, 50)
         layer_rect.center = (500, 350)
         self.layers_rects.append(layer_rect)
+    
+    def update_layers_buttons(self):
+        # Обновление позиции кнопки удаления слоя
+        self.delete_layer_rect.centery = self.layers_rects[-1].centery
+        self.delete_layer_rect.left = self.layers_rects[-1].right + 10
+        # Обновление позиции кнопки добавления слоя
+        self.add_layer_rect.top = self.layers_rects[-1].bottom + 20
+        self.add_layer_rect.centerx = self.layers_rects[-1].centerx
 
     def update(self, mouse_pos, mouse_click, key):
         event = None
@@ -84,9 +94,10 @@ class TrainMenu:
             if self.step == 0 and self.selected_game != None:
                 event = "train_next"
                 self.init_rewards()
-            if self.step == 1 and not self.selected_field:
+            if not self.selected_field:
                 event = "train_next"
                 self.init_layers()
+                self.update_layers_buttons()
         if self.back_button_rect.collidepoint(mouse_pos) and mouse_click:
             event = "train_back"
         
@@ -133,7 +144,45 @@ class TrainMenu:
                             print(self.field_value)
 
         # Третий экран
+        if self.step == 2:
+            for i, rect in enumerate(self.layers_rects):
+                if rect.collidepoint(mouse_pos) and mouse_click:
+                    self.selected_field = i
+                    self.field_value = str(self.layers[i])
+            if self.selected_field != None:
+                if key != None:
+                    if key.key == pygame.K_BACKSPACE:
+                        self.field_value = self.field_value[:-1]
+                    elif key.key == pygame.K_RETURN:
+                        if len(self.field_value) == 0:
+                            self.field_value = 1
 
+                        self.layers[self.selected_field] = int(self.field_value)
+                        self.field_value = None
+                        self.selected_field = None
+                    else:
+                        if key.unicode in self.second_numbers_filter:
+                            self.field_value += key.unicode
+                            print(self.field_value)
+
+            if len(self.layers) < 5:
+                if self.add_layer_rect.collidepoint(mouse_pos) and mouse_click:
+                    layer_rect = pygame.Rect(0, 0, 200, 50)
+                    layer_rect.center = (500, 350 + 75 * len(self.layers))
+                    self.layers_rects.append(layer_rect)
+                    self.layers.append(64)
+                    self.update_layers_buttons()
+                    self.field_value = None
+                    self.selected_field = None
+            
+            if len(self.layers) > 1:
+                if self.delete_layer_rect.collidepoint(mouse_pos) and mouse_click:
+                    self.layers_rects.pop()
+                    self.layers.pop()
+                    self.update_layers_buttons()
+                    self.field_value = None
+                    self.selected_field = None
+                    
         # Четвертый экран
 
         return event
@@ -196,10 +245,24 @@ class TrainMenu:
             display.blit(self.input_layer_text, self.input_layer_rect)
             for i, layer in enumerate(self.layers):
                 layer_text = self.game.f1.render(f"Слой {i + 1}: {layer}", True, (255,255,255))
-                pygame.draw.rect(display, (63, 63, 63), self.layers_rects[i])
+                if i == self.selected_field:
+                    pygame.draw.rect(display, (123, 42, 72), self.layers_rects[i], 5, 5)
+                else:
+                    pygame.draw.rect(display, (63, 63, 63), self.layers_rects[i])
                 display.blit(layer_text, layer_text.get_rect(center = self.layers_rects[i].center))
+            
+            if len(self.layers) < 5:
+                pygame.draw.rect(display, (63,63,63), self.add_layer_rect)
+                add_layer_text = self.game.f1.render("Добавить слой", True, (255, 255, 255))
+                add_layer_text_rect = add_layer_text.get_rect(center=self.add_layer_rect.center)
+                display.blit(add_layer_text, add_layer_text_rect)
+            
+            if len(self.layers) > 1:
+                pygame.draw.rect(display, (123, 42, 72), self.delete_layer_rect)
+
+            
             output_text = self.game.f1.render(f"Выходной слой: {self.game.games[self.selected_game]['action_size']}", True, (255,255,255))
-            output_rect = output_text.get_rect(center=(500, 350 + len(self.layers) * 75))
+            output_rect = output_text.get_rect(center=(500, 350 + len(self.layers) * 75 + 100))
             pygame.draw.rect(display, (63, 63, 63), output_rect)
             display.blit(output_text, output_rect)
         
