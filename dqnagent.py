@@ -4,7 +4,7 @@ from collections import deque
 
 
 class DQNAgent:
-    def __init__(self, state_size, action_size, memory=20000, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=64, update_target_every=100):
+    def __init__(self, state_size, action_size, memory=20000, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=64, update_target_every=100, layers=[128, 64]):
         self.state_size = state_size
         self.action_size = action_size
         self.memory = deque(maxlen=memory)  # Последние действия
@@ -16,9 +16,9 @@ class DQNAgent:
         self.update_target_every = update_target_every    # Когда должна обновляться модель.
 
         #Инициализация основной модели.
-        self.model = self.build_model()
+        self.model = self.build_model(layers)
         #Инициализация целевой модели
-        self.target_model = self.build_model()
+        self.target_model = self.build_model(layers)
         self.update_target_network()
         
 
@@ -32,13 +32,13 @@ class DQNAgent:
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
-    def build_model(self):
-        model = tf.keras.Sequential([
-            tf.keras.Input((self.state_size,)),
-            tf.keras.layers.Dense(256, activation='relu'),
-            tf.keras.layers.Dense(128, activation='relu'),
-            tf.keras.layers.Dense(self.action_size, activation='linear')
-        ])
+    def build_model(self, layers):
+        model = tf.keras.Sequential()
+        model.add(tf.keras.Input((self.state_size,)))
+        for layer in layers:
+            model.add(tf.keras.layers.Dense(layer, activation='relu'))
+
+        model.add(tf.keras.layers.Dense(self.action_size, activation='linear'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005))
         return model
     

@@ -3,7 +3,15 @@ import numpy as np
 
 class TaxiDriver:
 
-    def __init__(self, settings={"size": 10, "pits_amount": 0}):
+    def __init__(self, settings={"size": 10, "pits_amount": 0}, rewards={
+            "step_penalty": -0.25,
+            "pit_collision": -50,
+            "staying": -1,
+            "getting_passenger": 50,
+            "delivering_passenger": 100,
+            "distance_multiplier": 0.2,
+            'visited': -5
+        }):
         self.size = settings['size']
         self.player_pos = None
         self.passenger_pos = None
@@ -16,15 +24,7 @@ class TaxiDriver:
         self.visited = []
 
 
-        self.rewards_price = {
-            "step_penalty": -0.25,
-            "pit_collision": -50,
-            "staying": -1,
-            "getting_passenger": 50,
-            "delivering_passenger": 100,
-            "distance_multiplier": 0.2,
-            'visited': -5
-        }
+        self.rewards_price = rewards
 
     def reset(self):
         # Случайные координаты объектов на карте.

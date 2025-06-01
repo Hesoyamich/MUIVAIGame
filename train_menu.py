@@ -6,7 +6,7 @@ class TrainMenu:
         self.game = game
 
         self.step = 0
-        self.step_buttons = {0:[], 1:[], 2: [], 4: []}
+        self.step_buttons = {0:[], 1:[], 2: [], 3: []}
         self.step_description = ["Выберите игру.", "Настройки игры и награды.", "Модель нейронной сети.", "Парамеры нейронной сети и обучения."]
         self.desc_mark = self.game.f2.render("!", True, (255,255,255))
         # Кнопка вернуться назад
@@ -35,6 +35,13 @@ class TrainMenu:
         self.layers_rects = []
         self.delete_layer_rect = pygame.Rect(0, 0, 50, 50)
         self.add_layer_rect = pygame.Rect(0, 0, 200, 50)
+        # 4 экран
+        self.gamma = 0.95
+        self.memory = 20000
+        self.epsilon_decay = 0.995
+        self.batch_size = 64
+        self.learning_rate = 0.001
+        self.episodes = 100
 
     def initialize_games(self):
         for i, game in enumerate(self.game.games.keys()):
@@ -44,6 +51,19 @@ class TrainMenu:
             desc_rect.center = (190, text_rect.centery)
             desc = self.game.games[game]["desc"]
             self.step_buttons[0].append([game, text_surf, text_rect, desc, desc_rect])
+
+    def init_train_options(self):
+        options = ["Gamma", "Memory", "Epsilon Decay", "Batch Size", "Learning Rate", "Episodes"]
+        self.gamma = 0.95
+        self.memory = 20000
+        self.epsilon_decay = 0.995
+        self.batch_size = 64
+        self.learning_rate = 0.001
+        self.episodes = 100
+        for i, option in enumerate(options):
+            rect = pygame.Rect(510, 250 + 100 * i, 120, 50)
+            self.step_buttons[3].append([option, rect])
+        
 
     def init_rewards(self):
         self.game_settings = {}
@@ -94,10 +114,13 @@ class TrainMenu:
             if self.step == 0 and self.selected_game != None:
                 event = "train_next"
                 self.init_rewards()
-            if not self.selected_field:
+            if not self.selected_field and self.step == 1:
                 event = "train_next"
                 self.init_layers()
                 self.update_layers_buttons()
+            if not self.selected_field and self.step == 2:
+                event = "train_next"
+                self.init_train_options()
         if self.back_button_rect.collidepoint(mouse_pos) and mouse_click:
             event = "train_back"
         
@@ -265,7 +288,31 @@ class TrainMenu:
             output_rect = output_text.get_rect(center=(500, 350 + len(self.layers) * 75 + 100))
             pygame.draw.rect(display, (63, 63, 63), output_rect)
             display.blit(output_text, output_rect)
-        
+
+        if self.step == 3:
+            for button in self.step_buttons[3]:
+                option_text = self.game.f1.render(button[0] + ":", True, (255, 255, 255))
+                option_rect = option_text.get_rect(right=button[1].left, centery=button[1].centery)
+                display.blit(option_text, option_rect)
+                pygame.draw.rect(display, (255, 255, 255), button[1])
+                if self.selected_field != button[0]:
+                    field_text = None
+                    if button[0] == "Gamma":
+                        field_text = self.gamma
+                    elif button[0] == "Memory":
+                        field_text = self.memory
+                    elif button[0] == "Epsilon Decay":
+                        field_text = self.epsilon_decay
+                    elif button[0] == "Batch Size":
+                        field_text = self.batch_size
+                    elif button[0] == "Learning Rate":
+                        field_text = self.learning_rate
+                    elif button[0] == "Episodes":
+                        field_text = self.episodes
+                        
+                    field_text_surf = self.game.f1.render(str(field_text), True, (63, 63, 63))
+                    field_rect = field_text_surf.get_rect(center = button[1].center)
+                    display.blit(field_text_surf, field_rect)
 
         display.blit(self.next_button, self.next_button_rect)
         display.blit(self.back_button, self.back_button_rect)
