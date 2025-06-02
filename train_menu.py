@@ -207,6 +207,54 @@ class TrainMenu:
                     self.selected_field = None
                     
         # Четвертый экран
+        if self.step == 3:
+            for button in self.step_buttons[3]:
+                if button[1].collidepoint(mouse_pos) and mouse_click:
+                    self.selected_field = button[0]
+                    if button[0] == "Gamma":
+                        self.field_value = str(self.gamma)
+                    elif button[0] == "Memory":
+                        self.field_value = str(self.memory)
+                    elif button[0] == "Epsilon Decay":
+                        self.field_value = str(self.epsilon_decay)
+                    elif button[0] == "Batch Size":
+                        self.field_value = str(self.batch_size)
+                    elif button[0] == "Learning Rate":
+                        self.field_value = str(self.learning_rate)
+                    elif button[0] == "Episodes":
+                        self.field_value = str(self.episodes)
+
+            if self.selected_field != None:
+                if key != None:
+            
+                    if key.key == pygame.K_BACKSPACE:
+                        self.field_value = self.field_value[:-1]
+                    elif key.key == pygame.K_RETURN:
+                        if len(self.field_value) == 0:
+                            self.field_value = 0
+
+                        if self.selected_field == "Gamma":
+                            self.gamma = float(self.field_value)
+                        elif self.selected_field == "Memory":
+                            self.memory = int(self.field_value)
+                        elif self.selected_field == "Epsilon Decay":
+                            self.epsilon_decay = float(self.field_value)
+                        elif self.selected_field == "Batch Size":
+                            self.batch_size = int(self.field_value)
+                        elif self.selected_field == "Learning Rate":
+                            self.learning_rate = float(self.field_value)
+                        elif self.selected_field == "Episodes":
+                            self.episodes = int(self.learning_rate)
+
+                        self.selected_field = None
+                        self.field_value = None
+                    
+                    else:
+                        if key.unicode in self.numbers_filter:
+                            self.field_value += key.unicode
+
+                    
+
 
         return event
 
@@ -295,6 +343,8 @@ class TrainMenu:
                 option_rect = option_text.get_rect(right=button[1].left, centery=button[1].centery)
                 display.blit(option_text, option_rect)
                 pygame.draw.rect(display, (255, 255, 255), button[1])
+                if self.selected_field == button[0]:
+                    pygame.draw.rect(display, (123, 42, 72), button[1], 5, 5)
                 if self.selected_field != button[0]:
                     field_text = None
                     if button[0] == "Gamma":
@@ -313,6 +363,11 @@ class TrainMenu:
                     field_text_surf = self.game.f1.render(str(field_text), True, (63, 63, 63))
                     field_rect = field_text_surf.get_rect(center = button[1].center)
                     display.blit(field_text_surf, field_rect)
+                else:
+                    field_text_surf = self.game.f1.render(str(self.field_value), True, (63, 63, 63))
+                    field_rect = field_text_surf.get_rect(center = button[1].center)
+                    display.blit(field_text_surf, field_rect)
+
 
         display.blit(self.next_button, self.next_button_rect)
         display.blit(self.back_button, self.back_button_rect)
