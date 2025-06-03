@@ -121,6 +121,8 @@ class TrainMenu:
             if not self.selected_field and self.step == 2:
                 event = "train_next"
                 self.init_train_options()
+            if not self.selected_field and self.step == 3:
+                event = "train_next"
         if self.back_button_rect.collidepoint(mouse_pos) and mouse_click:
             event = "train_back"
         
@@ -260,18 +262,19 @@ class TrainMenu:
 
     
     def render(self, display):
-        gap = (1000 - 200) / 4
-        for i in range(4):
-            if i == self.step:
-                text = self.game.f1.render(f"Шаг {i + 1}", True, (123, 42, 72))
-                display.blit(text, (100 + i * gap, 50))
-            else:
-                text = self.game.f1.render(f"Шаг {i + 1}", True, (240, 240, 240))
-                display.blit(text, (100 + i * gap, 50))
-        text = self.game.f1.render(self.step_description[self.step], True, (255, 255, 255))
-        text_rect = text.get_rect()
-        text_rect.center = (500, 150)
-        display.blit(text, text_rect)
+        if self.step != 4:
+            gap = (1000 - 200) / 4
+            for i in range(4):
+                if i == self.step:
+                    text = self.game.f1.render(f"Шаг {i + 1}", True, (123, 42, 72))
+                    display.blit(text, (100 + i * gap, 50))
+                else:
+                    text = self.game.f1.render(f"Шаг {i + 1}", True, (240, 240, 240))
+                    display.blit(text, (100 + i * gap, 50))
+            text = self.game.f1.render(self.step_description[self.step], True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_rect.center = (500, 150)
+            display.blit(text, text_rect)
 
         # Первый экран
         if self.step == 0:

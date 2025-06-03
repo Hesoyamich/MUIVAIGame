@@ -3,6 +3,7 @@ from scripts.TaxiDriver import TaxiDriver
 # from dqnagent import DQNAgent
 from main_meny import MainMenu
 from train_menu import TrainMenu
+from training_process import TrainingProcessMenu
 
 class Game:
 
@@ -32,6 +33,7 @@ class Game:
         self.menu = MainMenu(self.f1)
         self.train_menu = None
         self.game_state = None
+        self.training_proc = None
         
 
     def run(self):
@@ -71,13 +73,22 @@ class Game:
                     self.train_menu = TrainMenu(self)
                     self.game_state = self.train_menu
             if menu_event == "train_next":
-                self.game_state.step = min(self.game_state.step + 1, 3)
+                self.train_menu.step += 1
+                if self.train_menu.step == 4:
+                    self.training_proc = TrainingProcessMenu(self.f1, self.games[self.train_menu.selected_game]["game_class"],self.train_menu.game_settings, 
+                                                                self.train_menu.rewards, self.train_menu.layers, self.train_menu.gamma, self.train_menu.memory,
+                                                                self.train_menu.epsilon_decay, self.train_menu.batch_size, self.train_menu.learning_rate, self.train_menu.episodes,
+                                                                self.games[self.train_menu.selected_game]["min_state_size"] + self.train_menu.game_settings[self.games[self.train_menu.selected_game]["add_size"][0]] * self.games[self.train_menu.selected_game]["add_size"][1],
+                                                                self.games[self.train_menu.selected_game]['action_size'])
+                    self.game_state = self.training_proc
             if menu_event == "train_back":
                 self.game_state.step -= 1
                 if self.game_state.step < 0:
                     self.train_menu = None
                     self.game_state = None
                 
+            if menu_event == "stop_training":
+                self.game_state = None
 
             # action = self.agent.take_action(self.state)
             # next_state, reward, self.done = self.taxi_driver.step(action)
