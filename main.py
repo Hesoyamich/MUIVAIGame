@@ -89,6 +89,8 @@ class Game:
                 
             if menu_event == "stop_training":
                 self.game_state = None
+                self.train_menu = None
+                
 
             # action = self.agent.take_action(self.state)
             # next_state, reward, self.done = self.taxi_driver.step(action)

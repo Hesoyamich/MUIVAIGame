@@ -41,8 +41,9 @@ class TrainingProcessMenu:
         if self.total_time % self.agent.update_target_every == 0:
             self.agent.update_target_network()
 
-        if key == pygame.K_ESCAPE:
-            event = "stop_training"
+        if key:
+            if key.key == pygame.K_ESCAPE:
+                event = "stop_training"
 
         return event
     
