@@ -246,7 +246,7 @@ class TrainMenu:
                         elif self.selected_field == "Learning Rate":
                             self.learning_rate = float(self.field_value)
                         elif self.selected_field == "Episodes":
-                            self.episodes = int(self.learning_rate)
+                            self.episodes = int(self.field_value)
 
                         self.selected_field = None
                         self.field_value = None
@@ -340,6 +340,7 @@ class TrainMenu:
             pygame.draw.rect(display, (63, 63, 63), output_rect)
             display.blit(output_text, output_rect)
 
+        # Четвертый экран
         if self.step == 3:
             for button in self.step_buttons[3]:
                 option_text = self.game.f1.render(button[0] + ":", True, (255, 255, 255))

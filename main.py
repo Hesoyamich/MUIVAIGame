@@ -1,6 +1,5 @@
 import pygame
 from scripts.TaxiDriver import TaxiDriver
-# from dqnagent import DQNAgent
 from main_meny import MainMenu
 from train_menu import TrainMenu
 from training_process import TrainingProcessMenu
@@ -24,12 +23,6 @@ class Game:
                                                   "Подбор попутчика": "getting_passenger", "Доставка попутчика:": "delivering_passenger", "Движение к цели": 'distance_multiplier',
                                                   "Посещение той же очки:": 'visited'}, "action_size": 4, "min_state_size": 5, "add_size": ["pits_amount", 2]
                                       }}
-        # self.agent = DQNAgent(21, 4)
-        # self.episode = 0
-        # self.max_episodes = 1000
-        # self.total_time = 0
-        # self.total_reward = 0
-        # self.done = False
         self.menu = MainMenu(self.f1)
         self.train_menu = None
         self.game_state = None
@@ -48,15 +41,6 @@ class Game:
                         mouse_press = True
                 if event.type == pygame.KEYDOWN:
                     key = event
-                # elif event.type == pygame.KEYDOWN:
-                #     if event.key == pygame.K_w:
-                #         self.state, reward, done = self.taxi_driver.step(0)
-                #     if event.key == pygame.K_s:
-                #         self.state, reward, done = self.taxi_driver.step(1)
-                #     if event.key == pygame.K_a:
-                #         self.state, reward, done = self.taxi_driver.step(2)
-                #     if event.key == pygame.K_d:
-                #         self.state, reward, done = self.taxi_driver.step(3)
             
             mouse_pos = pygame.mouse.get_pos()
 
@@ -78,7 +62,9 @@ class Game:
                     self.training_proc = TrainingProcessMenu(self.f1, self.games[self.train_menu.selected_game]["game_class"],self.train_menu.game_settings, 
                                                                 self.train_menu.rewards, self.train_menu.layers, self.train_menu.gamma, self.train_menu.memory,
                                                                 self.train_menu.epsilon_decay, self.train_menu.batch_size, self.train_menu.learning_rate, self.train_menu.episodes,
-                                                                self.games[self.train_menu.selected_game]["min_state_size"] + self.train_menu.game_settings[self.games[self.train_menu.selected_game]["add_size"][0]] * self.games[self.train_menu.selected_game]["add_size"][1],
+                                                                self.games[self.train_menu.selected_game]["min_state_size"] + 
+                                                                self.train_menu.game_settings[self.games[self.train_menu.selected_game]["add_size"][0]] * 
+                                                                self.games[self.train_menu.selected_game]["add_size"][1],
                                                                 self.games[self.train_menu.selected_game]['action_size'])
                     self.game_state = self.training_proc
             if menu_event == "train_back":
@@ -89,30 +75,7 @@ class Game:
                 
             if menu_event == "stop_training":
                 self.game_state = None
-                self.train_menu = None
-                
-
-            # action = self.agent.take_action(self.state)
-            # next_state, reward, self.done = self.taxi_driver.step(action)
-            # self.agent.remember(self.state, action, reward, next_state, self.done)
-            # self.state = next_state
-            # self.total_reward += reward
-            
-            # # Обучение
-            # self.agent.train()
-            
-            # # Обновлять целевую модель переодически
-            # if self.total_time % self.agent.update_target_every == 0:
-            #     self.agent.update_target_network()
-
-            # if self.done:
-            #     print(f"Episode: {self.episode+1}/{self.max_episodes}, Total Reward: {self.total_reward}, Epsilon: {self.agent.epsilon:.2f}")
-            #     self.total_reward = 0
-            #     self.episode += 1
-            #     self.state = self.taxi_driver.reset()
-            #     self.done = False
-
-            
+                self.train_menu = None           
 
             self.display.fill((40, 40, 40))
 

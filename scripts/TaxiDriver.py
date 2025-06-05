@@ -20,6 +20,7 @@ class TaxiDriver:
         self.pits_amount = settings['pits_amount']
         self.has_passenger = False
         self.done = False
+        self.box_size = 1000 // self.size
         
         self.visited = []
 
@@ -69,6 +70,9 @@ class TaxiDriver:
             state.extend([pit[0] / (self.size - 1), pit[1] / (self.size - 1)])
         
         return state
+    
+    def render(self, display):
+        pygame.draw.rect(display, (255, 255, 0), (self.player_pos[0], self.player_pos[1], self.box_size))
 
     def step(self, action):
         if self.done:
