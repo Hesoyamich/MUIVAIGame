@@ -4,6 +4,8 @@ from main_meny import MainMenu
 from train_menu import TrainMenu
 from training_process import TrainingProcessMenu
 import json
+import os
+from launch_model import LaunchModel
 
 class Game:
 
@@ -28,6 +30,7 @@ class Game:
         self.train_menu = None
         self.game_state = None
         self.training_proc = None
+        self.current_game = None
         
 
     def run(self):
@@ -52,7 +55,8 @@ class Game:
             if menu_event == "quit":
                 self.is_running = False
             if menu_event == "start_nn":
-                self.in_game = True
+                self.current_game = LaunchModel(self)
+                self.game_state = self.current_game
             if menu_event == "train_nn":
                 if self.train_menu == None:
                     self.train_menu = TrainMenu(self)

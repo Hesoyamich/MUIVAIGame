@@ -78,3 +78,4 @@ class DQNAgent:
 
     def save_model(self, name):
         self.model.save(f'models/{name}/model.h5')
+        self.model.save(f'models/{name}/model.keras')

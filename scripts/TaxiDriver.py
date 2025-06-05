@@ -72,7 +72,11 @@ class TaxiDriver:
         return state
     
     def render(self, display):
-        pygame.draw.rect(display, (255, 255, 0), (self.player_pos[0], self.player_pos[1], self.box_size))
+        pygame.draw.rect(display, (255, 255, 0), (self.player_pos[0] * self.box_size, self.player_pos[1] * self.box_size, self.box_size, self.box_size))
+        pygame.draw.rect(display, (0, 0, 255), (self.passenger_pos[0] * self.box_size, self.passenger_pos[1] * self.box_size, self.box_size, self.box_size))
+        pygame.draw.rect(display, (0, 255, 0), (self.destination_pos[0] * self.box_size, self.destination_pos[1] * self.box_size, self.box_size, self.box_size))
+        for i in self.pits:
+            pygame.draw.rect(display, (255, 0, 0), (i[0], i[1], self.box_size, self.box_size))
 
     def step(self, action):
         if self.done:
@@ -106,8 +110,6 @@ class TaxiDriver:
             reward += self.rewards_price["visited"]
         else:
             self.visited.append(new_pos)
-
-
 
         # Проверка на игровые события
         if not self.has_passenger and self.player_pos == self.passenger_pos:
