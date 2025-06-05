@@ -18,6 +18,7 @@ class TrainingProcessMenu:
         self.state = self.game.reset()
         self.is_training = True
         self.plot = None
+        self.filename_filter = '\/:*?<>|".'
         # Кнопки после обучения
         self.back_to_menu_text = self.font.render("Венуться в меню", True, (255, 255, 255))
         self.back_to_menu_rect = self.back_to_menu_text.get_rect(left=20, centery=960)
@@ -25,6 +26,16 @@ class TrainingProcessMenu:
         self.save_model_rect = self.back_to_menu_text.get_rect(right=950, centery=960)
         # Кнопки сохранения модели
         self.saving_model = False
+        self.popup_window_rect = pygame.Rect(0,0, 300, 120)
+        self.popup_window_rect.center = (500, 500)
+        self.model_name = ""
+        self.popup_save_button = self.font.render("Сохранить", True, (255, 255, 255))
+        self.popup_save_button_rect = self.popup_save_button.get_rect(right=self.popup_window_rect.right - 20, bottom=self.popup_window_rect.bottom)
+        self.popup_cancel_button = self.font.render("Отмена", True, (255, 255, 255))
+        self.popup_cancel_button_rect = self.popup_cancel_button.get_rect(left=self.popup_window_rect.left + 20, bottom=self.popup_window_rect.bottom)
+        self.popup_input_window = pygame.Rect(0, 0, 280, 50)
+        self.popup_input_window.top = self.popup_window_rect.top + 10
+        self.popup_input_window.centerx = self.popup_window_rect.centerx
 
 
 
@@ -67,9 +78,21 @@ class TrainingProcessMenu:
                 event = "back_to_menu"
             if self.save_model_rect.collidepoint(mouse_pos) and mouse_press:
                 self.saving_model = True
+                self.model_name = ""
+            if self.saving_model:
+                if self.popup_cancel_button_rect.collidepoint(mouse_pos) and mouse_press:
+                    self.saving_model = False
+                    self.model_name = ""
+                if self.popup_save_button_rect.collidepoint(mouse_pos) and mouse_press and len(self.model_name) > 3:
+                    event = "save_model"
+                    self.saving_model = False
+                if key != None:
+                    if key.key == pygame.K_BACKSPACE:
+                        self.model_name = self.model_name[:-1]
+                    else:
+                        if key.unicode not in self.filename_filter and len(self.model_name) < 15:
+                            self.model_name += key.unicode
                 
-        
-        
 
         return event
     
@@ -81,3 +104,12 @@ class TrainingProcessMenu:
             display.blit(self.plot, (0,0))
             display.blit(self.back_to_menu_text, self.back_to_menu_rect)
             display.blit(self.save_model_text, self.save_model_rect)
+            if self.saving_model:
+                file_name = self.font.render(self.model_name, True, (23, 23, 23))
+                file_name_rect = file_name.get_rect(center = self.popup_input_window.center)
+                pygame.draw.rect(display, (63, 63, 63), self.popup_window_rect, 0, 5)
+                pygame.draw.rect(display, (123, 42, 72), self.popup_window_rect, 5, 5)
+                display.blit(self.popup_cancel_button, self.popup_cancel_button_rect)
+                display.blit(self.popup_save_button, self.popup_save_button_rect)
+                pygame.draw.rect(display, (255, 255, 255), self.popup_input_window)
+                display.blit(file_name, file_name_rect)

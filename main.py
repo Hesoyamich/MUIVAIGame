@@ -3,6 +3,7 @@ from scripts.TaxiDriver import TaxiDriver
 from main_meny import MainMenu
 from train_menu import TrainMenu
 from training_process import TrainingProcessMenu
+import json
 
 class Game:
 
@@ -73,9 +74,16 @@ class Game:
                     self.train_menu = None
                     self.game_state = None
                 
-            if menu_event == "stop_training":
+            if menu_event == "stop_training" or menu_event == "back_to_menu":
                 self.game_state = None
                 self.train_menu = None           
+
+            if menu_event == "save_model":
+                self.training_proc.agent.save_model(self.training_proc.model_name)
+                conf_file = {"game": self.train_menu.selected_game, "settings": self.train_menu.game_settings}
+                with open(f"models/{self.training_proc.model_name}/config.json", "w") as f:
+                    json.dump(conf_file, f, indent=4)
+
 
             self.display.fill((40, 40, 40))
 

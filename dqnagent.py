@@ -4,7 +4,8 @@ from collections import deque
 
 
 class DQNAgent:
-    def __init__(self, state_size, action_size, memory=20000, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=64, update_target_every=100, layers=[128, 64], lr=0.0001):
+    def __init__(self, state_size, action_size, memory=20000, gamma=0.95, epsilon=1.0, epsilon_min=0.01,
+                  epsilon_decay=0.995, batch_size=64, update_target_every=100, layers=[128, 64], lr=0.0001):
         self.state_size = state_size
         self.action_size = action_size
         self.memory = deque(maxlen=memory)  # Последние действия
@@ -74,3 +75,6 @@ class DQNAgent:
 
     def update_target_network(self):
         self.target_model.set_weights(self.model.get_weights())
+
+    def save_model(self, name):
+        self.model.save(f'models/{name}/model.h5')
