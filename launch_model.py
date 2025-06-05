@@ -34,7 +34,7 @@ class LaunchModel:
 
     def update(self, mouse_pos, mouse_press, key):
         event = None
-        if key == pygame.K_ESCAPE:
+        if key.key == pygame.K_ESCAPE:
             event = 'back_to_menu'
         
         if not self.game:
