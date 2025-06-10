@@ -88,8 +88,10 @@ class TrainMenu:
     def init_layers(self):
         self.layers = []
         self.layers_rects = []
-        add_inputs = self.game.games[self.selected_game]["add_size"]
-        inputs = self.game.games[self.selected_game]["min_state_size"] + self.game_settings[add_inputs[0]] * add_inputs[1]
+        inputs = self.game.games[self.selected_game]["min_state_size"]
+        if "add_size" in self.game.games[self.selected_game].keys():
+            add_inputs = self.game.games[self.selected_game]["add_size"]
+            inputs = self.game.games[self.selected_game]["min_state_size"] + self.game_settings[add_inputs[0]] * add_inputs[1]
         self.input_layer_text = self.game.f1.render(f"Входной слой: {inputs} нейроннов", True, (255,255,255))
 
         self.input_layer_rect = self.input_layer_text.get_rect()
@@ -228,13 +230,11 @@ class TrainMenu:
 
             if self.selected_field != None:
                 if key != None:
-            
                     if key.key == pygame.K_BACKSPACE:
                         self.field_value = self.field_value[:-1]
                     elif key.key == pygame.K_RETURN:
                         if len(self.field_value) == 0:
                             self.field_value = 0
-
                         if self.selected_field == "Gamma":
                             self.gamma = float(self.field_value)
                         elif self.selected_field == "Memory":
@@ -247,16 +247,11 @@ class TrainMenu:
                             self.learning_rate = float(self.field_value)
                         elif self.selected_field == "Episodes":
                             self.episodes = int(self.field_value)
-
                         self.selected_field = None
                         self.field_value = None
-                    
                     else:
                         if key.unicode in self.numbers_filter:
                             self.field_value += key.unicode
-
-                    
-
 
         return event
 

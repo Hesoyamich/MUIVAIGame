@@ -1,5 +1,7 @@
 import pygame
 from scripts.TaxiDriver import TaxiDriver
+from scripts.JumpyBird import JumpyBird
+from scripts.AsteroidDodger import AsteroidDodger
 from main_meny import MainMenu
 from train_menu import TrainMenu
 from training_process import TrainingProcessMenu
@@ -25,7 +27,14 @@ class Game:
                                       "rewards": {"Наказание за движение:":"step_penalty", "Падение в яму:":"pit_collision", "Стояние на месте:": "staying",
                                                   "Подбор попутчика": "getting_passenger", "Доставка попутчика:": "delivering_passenger", "Движение к цели": 'distance_multiplier',
                                                   "Посещение той же очки:": 'visited'}, "action_size": 4, "min_state_size": 5, "add_size": ["pits_amount", 2]
-                                      }}
+                                      },
+                        "Jumpy Bird": {"desc": "Нейронной сети нужно научиться прыгать между труб.", "game_class": JumpyBird,
+                                      "game_settings": {"Растояние между трубами:":["pipe_space", 300], "Шель между труб:": ["pipe_gap", 150], "Ширина трубы:": ["pipe_width", 30]},
+                                      "rewards": {"Выживание:":"survivability", "Прыжок:":"jumping", "Колизия:": "collision",
+                                                  "Получения очка:": "getting_score"}, "action_size": 2, "min_state_size": 5},
+                        "Asteroid Dodger": {"desc": "Нейронной сети нужно научиться уворачиваться от астероидов.", "game_class": AsteroidDodger,
+                                      "game_settings": {"Размер игрока:":["player_size", 30], "Размер астероида:": ["asteroid_size", 25], "Количество астероидов:": ["max_asteroids", 5]},
+                                      "rewards": {"Выживание:":"survival", "Колизия:": "collision"}, "action_size": 2, "min_state_size": 2, "add_size": ["max_asteroids", 2]}}
         self.menu = MainMenu(self.f1)
         self.train_menu = None
         self.game_state = None
@@ -69,8 +78,9 @@ class Game:
                                                                 self.train_menu.epsilon_decay, self.train_menu.batch_size, self.train_menu.learning_rate, self.train_menu.episodes,
                                                                 self.games[self.train_menu.selected_game]["min_state_size"] + 
                                                                 self.train_menu.game_settings[self.games[self.train_menu.selected_game]["add_size"][0]] * 
-                                                                self.games[self.train_menu.selected_game]["add_size"][1],
-                                                                self.games[self.train_menu.selected_game]['action_size'])
+                                                                self.games[self.train_menu.selected_game]["add_size"][1] if "add_size" in self.games[self.train_menu.selected_game].keys() else self.games[self.train_menu.selected_game]["min_state_size"],
+                                                                self.games[self.train_menu.selected_game]['action_size'],
+                                                                )
                     self.game_state = self.training_proc
             if menu_event == "train_back":
                 self.game_state.step -= 1
