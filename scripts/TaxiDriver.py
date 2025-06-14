@@ -76,7 +76,7 @@ class TaxiDriver:
         pygame.draw.rect(display, (0, 0, 255), (self.passenger_pos[0] * self.box_size, self.passenger_pos[1] * self.box_size, self.box_size, self.box_size))
         pygame.draw.rect(display, (0, 255, 0), (self.destination_pos[0] * self.box_size, self.destination_pos[1] * self.box_size, self.box_size, self.box_size))
         for i in self.pits:
-            pygame.draw.rect(display, (255, 0, 0), (i[0], i[1], self.box_size, self.box_size))
+            pygame.draw.rect(display, (255, 0, 0), (i[0] * self.box_size, i[1] * self.box_size, self.box_size, self.box_size))
 
     def step(self, action):
         if self.done:
